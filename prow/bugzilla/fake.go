@@ -50,6 +50,11 @@ func (c *Fake) bugErrorMsg(bug int, def string) error {
 	return errors.New(def)
 }
 
+// IsValidLogin retrieves a Bug from the server
+func (c *Fake) GetUser(email string) (int, error) {
+	return 0, nil
+}
+
 // GetBug retrieves the bug, if registered, or an error, if set,
 // or responds with an error that matches IsNotFound
 func (c *Fake) GetBug(id int) (*Bug, error) {
@@ -315,3 +320,4 @@ func (c *Fake) Used() bool                                 { return true }
 
 // the Fake is a Client
 var _ Client = &Fake{}
+

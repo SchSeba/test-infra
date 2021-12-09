@@ -43,6 +43,8 @@ const (
 
 type Client interface {
 	Endpoint() string
+	// GetUser retrieves a Bug from the server
+	GetUser(email string) (int, error)
 	// GetBug retrieves a Bug from the server
 	GetBug(id int) (*Bug, error)
 	// GetComments gets a list of comments for a specific bug ID.
@@ -222,6 +224,36 @@ var _ Client = &client{}
 
 func (c *client) Endpoint() string {
 	return c.endpoint
+}
+
+// GetUser retrieves a Bug from the server
+// https://bugzilla.readthedocs.io/en/latest/api/core/v1/user.html#get-user
+func (c *client) GetUser(email string) (int, error) {
+	logger := c.logger.WithFields(logrus.Fields{methodField: "IsValidLogin", "email": email})
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/rest/user?names=%s", c.endpoint, email), nil)
+	if err != nil {
+		return 0, err
+	}
+	raw, err := c.request(req, logger)
+	if err != nil {
+		return 0, err
+	}
+	var parsedResponse struct {
+		Users []struct {
+			ID       int    `json:"id"`
+			Name     string `json:"name"`
+			RealName string `json:"real_name"`
+		} `json:"users,omitempty"`
+	}
+
+	if err := json.Unmarshal(raw, &parsedResponse); err != nil {
+		return 0, fmt.Errorf("could not unmarshal response body: %w", err)
+	}
+	if len(parsedResponse.Users) != 1 {
+		return 0, fmt.Errorf("did not get one user, but %d: %v", len(parsedResponse.Users), parsedResponse)
+	}
+
+	return parsedResponse.Users[0].ID, nil
 }
 
 // GetBug retrieves a Bug from the server
@@ -1026,3 +1058,4 @@ func (c *client) SearchBugs(filters map[string]string) ([]*Bug, error) {
 	}
 	return parsedResponse.Bugs, nil
 }
+
