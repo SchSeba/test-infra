@@ -278,12 +278,16 @@ type ExternalBug struct {
 	Num       int
 	// Status holds the status of the PR (ie closed, merged, open)
 	Status string `json:"ext_status"`
+	// Description
+	Description string `json:"ext_description"`
 }
 
 // ExternalBugType holds identifying metadata for a tracker
 type ExternalBugType struct {
 	// URL is the identifying URL for this tracker
-	URL string `json:"url"`
+	URL         string `json:"url"`
+	Description string `json:"description"`
+	FullUrl     string `json:"full_url"`
 }
 
 // AddExternalBugParameters are the parameters required to add an external

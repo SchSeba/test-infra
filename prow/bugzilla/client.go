@@ -515,7 +515,7 @@ func (c *client) GetExternalBugPRsOnBug(id int) ([]ExternalBug, error) {
 			continue
 		}
 		if bug.Type.URL != "https://github.com/" {
-			// TODO: skuznets: figure out how to honor the endpoints given to the GitHub client to support enterprise here
+			prs = append(prs, bug)
 			continue
 		}
 		org, repo, num, err := PullFromIdentifier(bug.ExternalBugID)
@@ -1058,4 +1058,3 @@ func (c *client) SearchBugs(filters map[string]string) ([]*Bug, error) {
 	}
 	return parsedResponse.Bugs, nil
 }
-

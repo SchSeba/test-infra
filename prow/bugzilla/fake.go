@@ -320,4 +320,3 @@ func (c *Fake) Used() bool                                 { return true }
 
 // the Fake is a Client
 var _ Client = &Fake{}
-
